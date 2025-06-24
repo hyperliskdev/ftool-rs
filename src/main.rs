@@ -52,7 +52,7 @@ async fn main() {
             tag_hosts(
                 &falcon,
                 tag.clone(),
-                hosts.as_ref().map(|p| p.to_string_lossy().to_string()),
+                hosts.clone(),
                 action.clone(),
             )
             .await

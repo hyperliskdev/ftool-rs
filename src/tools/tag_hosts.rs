@@ -1,3 +1,5 @@
+use std::path::{Path, PathBuf};
+
 use rusty_falcon::{
     apis::{discover_api::query_hosts, hosts_api::update_device_tags},
     easy::client::FalconHandle,
@@ -7,7 +9,7 @@ use rusty_falcon::{
 pub async fn tag_hosts(
     falcon: &FalconHandle,
     tag: String,
-    hosts: Option<String>,
+    hosts: Option<PathBuf>,
     action: String,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let hostnames = if let Some(file) = hosts {
