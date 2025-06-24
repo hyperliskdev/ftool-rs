@@ -2,7 +2,7 @@ use clap::{Parser, Subcommand};
 use rusty_falcon::{
     easy::client::{FalconHandle},
 };
-use std::path::PathBuf;
+use std::{env, path::PathBuf};
 use tools::tag_hosts::tag_hosts;
 
 mod tools;
@@ -41,9 +41,10 @@ enum Commands {
 async fn main() {
     let cli = Cli::parse();
 
+    println!("{}", env::var("FALCON_CLIENT_ID").unwrap_or("No FALCON_CLIENT_ID set".to_string()));
     let falcon = FalconHandle::from_env()
         .await
-        .expect("Could not authenticate with CrowdStrike API");
+        .expect("Could not authenticate with CrowdStrike API", );
 
     match &cli.command {
         Some(Commands::TagHosts { tag, hosts, action }) => {
