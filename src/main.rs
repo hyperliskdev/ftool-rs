@@ -4,7 +4,9 @@ use rusty_falcon::{
 };
 use std::{env, path::PathBuf};
 use tools::tag_hosts::tag_hosts;
+extern crate dotenv;
 
+use dotenv::dotenv;
 mod tools;
 
 #[derive(Parser)]
@@ -39,6 +41,9 @@ enum Commands {
 
 #[tokio::main]
 async fn main() {
+
+    dotenv().ok();
+    
     let cli = Cli::parse();
 
     println!("{}", env::var("FALCON_CLIENT_ID").unwrap_or("No FALCON_CLIENT_ID set".to_string()));

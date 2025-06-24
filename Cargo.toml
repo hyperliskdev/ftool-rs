@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 clap = {version = "4.5.40", features = ["derive"] }
+dotenv = "0.15.0"
 log = "0.4.27"
 rusty_falcon = "0.4.0"
 tokio = {version = "1.45.1", features = ["full"]}
