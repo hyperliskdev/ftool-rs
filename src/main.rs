@@ -2,7 +2,7 @@ use clap::{Parser, Subcommand};
 use rusty_falcon::{
     easy::client::{FalconHandle},
 };
-use std::{env, path::PathBuf};
+use std::{path::PathBuf};
 use tools::tag_hosts::tag_hosts;
 extern crate dotenv;
 
