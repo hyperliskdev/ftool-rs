@@ -43,10 +43,9 @@ enum Commands {
 async fn main() {
 
     dotenv().ok();
-    
+
     let cli = Cli::parse();
 
-    println!("{}", env::var("FALCON_CLIENT_ID").unwrap_or("No FALCON_CLIENT_ID set".to_string()));
     let falcon = FalconHandle::from_env()
         .await
         .expect("Could not authenticate with CrowdStrike API", );
