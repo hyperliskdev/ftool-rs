@@ -26,8 +26,8 @@ enum Commands {
     #[command(name = "tag-hosts")]
     TagHosts {
         /// The tag to apply to the hosts
-        #[arg(short, long, value_name = "TAG")]
-        tag: String,
+        #[arg(short, long, value_name = "TAG", num_args(0..=10))]
+        tag: Vec<String>,
 
         #[arg(short, long, value_name = "FILE")]
         /// The hosts to tag
@@ -45,14 +45,29 @@ async fn main() {
         .await
         .expect("Could not authenticate with CrowdStrike API");
 
-    
-
     match &cli.command {
         Some(Commands::TagHosts { tag, hosts, action }) => {
+            
+            // Check if a file exists and pass the path to the tag_hosts function
+            let hosts = match hosts {
+                Some(path) => {
+                    if path.exists() {
+                        path.clone()
+                    } else {
+                        eprintln!("The specified file does not exist: {:?}", path);
+                        return;
+                    }
+                }
+                None => {
+                    eprintln!("No hosts file provided. Please specify a file with the --hosts option.");
+                    return;
+                }
+            };
+            
             tag_hosts(
                 &falcon,
                 tag.clone(),
-                hosts.clone(),
+                hosts,
                 action.clone(),
             )
             .await
