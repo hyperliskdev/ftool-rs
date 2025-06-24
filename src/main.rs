@@ -7,7 +7,6 @@ use tools::tag_hosts::tag_hosts;
 
 mod tools;
 
-
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
 struct Cli {
@@ -26,17 +25,18 @@ enum Commands {
     #[command(name = "tag-hosts")]
     TagHosts {
         /// The tag to apply to the hosts
-        #[arg(short, long, value_name = "TAG", num_args(0..=10))]
+        #[arg(long, value_name = "TAG", num_args(0..=10))]
         tag: Vec<String>,
 
-        #[arg(short, long, value_name = "FILE")]
+        #[arg(long, value_name = "FILE")]
         /// The hosts to tag
         hosts: Option<PathBuf>,
 
-        #[arg(short, long, value_name = "ACTION", default_value="add")]
+        #[arg(long, value_name = "ACTION", default_value="add")]
         action: String,
     },
 }
+
 #[tokio::main]
 async fn main() {
     let cli = Cli::parse();
