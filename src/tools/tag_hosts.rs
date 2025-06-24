@@ -1,21 +1,19 @@
-use std::path::{Path, PathBuf};
+use std::{path::{PathBuf}};
 
 use rusty_falcon::{
     apis::{
-        discover_api::query_hosts,
         hosts_api::{query_devices_by_filter, update_device_tags},
     },
     easy::client::FalconHandle,
     models::DeviceapiPeriodUpdateDeviceTagsRequestV1,
 };
-use tokio::time::error::Error;
 
 pub async fn tag_hosts(
     falcon: &FalconHandle,
     tag: Vec<String>,
     hosts: PathBuf,
     action: String,
-) -> Result<(), Box<dyn std::error::Error>> {
+) -> Result<String, Box<dyn std::error::Error>> {
     // Read the file containing hostname.
     // The file is expected to contain one hostname per line.
     let hostnames: Vec<String> = std::fs::read_to_string(&hosts)?
@@ -30,7 +28,6 @@ pub async fn tag_hosts(
             .await?;
 
     if !host_ids.errors.is_empty() {
-        eprintln!("Error querying devices by filter: {:?}", host_ids.errors);
         return Err(format!("Error querying devices by filter: {:?}", host_ids.errors).into());
     }
 
@@ -45,14 +42,11 @@ pub async fn tag_hosts(
     .await?;
 
     if let Some(errors) = &update_tag.errors {
-        eprintln!("Error updating device tags: {:?}", errors);
         return Err(format!("Error updating device tags: {:?}", errors).into());
     }
 
 
-    update_tag.resources
-        .iter()
-        .for_each(|result| println!("Updated device with ID: {}", result.device_id));
-
-    Ok(())
+    Ok(
+        format!("Successfully updated tags for hosts: {:?}", update_tag.resources).into()
+    )
 }

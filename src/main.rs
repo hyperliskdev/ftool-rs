@@ -64,7 +64,7 @@ async fn main() {
                 }
             };
             
-            tag_hosts(
+            let result = tag_hosts(
                 &falcon,
                 tag.clone(),
                 hosts,
@@ -72,6 +72,8 @@ async fn main() {
             )
             .await
             .expect("Failed to tag hosts");
+
+            println!("{}", result);
         }
         None => {
             eprintln!("No command provided. Use --help for more information.");
