@@ -23,6 +23,7 @@ pub async fn tag_hosts(
         .collect();
 
     let filter = format!("hostname:[{}]", hostnames.join(","));
+    println!("Filter: {}", filter);
     let host_ids =
         query_devices_by_filter(&falcon.cfg, None, None, None, Some(filter.as_str()))
             .await?;
