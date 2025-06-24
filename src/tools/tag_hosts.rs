@@ -8,6 +8,7 @@ use rusty_falcon::{
     easy::client::FalconHandle,
     models::DeviceapiPeriodUpdateDeviceTagsRequestV1,
 };
+use tokio::time::error::Error;
 
 pub async fn tag_hosts(
     falcon: &FalconHandle,
@@ -26,23 +27,32 @@ pub async fn tag_hosts(
     let filter = format!("hostname:[{}]", hostnames.join(","));
     let host_ids =
         query_devices_by_filter(&falcon.cfg, None, None, None, Some(filter.as_str()))
-            .await
-            .inspect(|response| {
-                if !response.errors.is_empty() {
-                    eprintln!("Error querying devices by filter: {:?}", response.errors);
-                }
-            })?;
+            .await?;
 
-    let tag_update = update_device_tags(&falcon.cfg, DeviceapiPeriodUpdateDeviceTagsRequestV1 { action: action, device_ids: host_ids.resources, tags: tag })
-        .await
-        .inspect(|response| {
-            if !response.errors.is_empty() {
-                eprintln!("Error updating device tags: {:?}", response.errors);
-            }
-        })?;
-
-    if host_ids.resources.is_empty() {
-        eprintln!("No hosts found for the provided hostnames.");
-        return Ok(());
+    if !host_ids.errors.is_empty() {
+        eprintln!("Error querying devices by filter: {:?}", host_ids.errors);
+        return Err(format!("Error querying devices by filter: {:?}", host_ids.errors).into());
     }
+
+    let update_tag = update_device_tags(
+        &falcon.cfg,
+        DeviceapiPeriodUpdateDeviceTagsRequestV1 {
+            action,
+            device_ids: host_ids.resources,
+            tags: tag,
+        },
+    )
+    .await?;
+
+    if let Some(errors) = &update_tag.errors {
+        eprintln!("Error updating device tags: {:?}", errors);
+        return Err(format!("Error updating device tags: {:?}", errors).into());
+    }
+
+
+    update_tag.resources
+        .iter()
+        .for_each(|result| println!("Updated device with ID: {}", result.device_id));
+
+    Ok(())
 }
