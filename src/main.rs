@@ -105,12 +105,12 @@ async fn main() {
                     if path.exists() {
                         path.clone()
                     } else {
-                        debug!("The specified file does not exist: {:?}", path);
+                        warn!("The specified file does not exist: {:?}", path);
                         return;
                     }
                 }
                 None => {
-                    debug!(
+                    error!(
                         "No hosts file provided. Please specify a file with the --hosts option."
                     );
                     return;
@@ -128,15 +128,16 @@ async fn main() {
 
             if action == "remove" {
                 for host in &result.unwrap_or_default() {
-                    debug!("Host with tag: {:?} removed from {:?}", tag, host.device_id);
+                    warn!("[CODE: {}] | Host with tag: {:?} removed from {:?}", host.code, tag, host.device_id);
                 }
             } else {
                 for host in &result.unwrap_or_default() {
-                    debug!("Host tagged: {:?} with tag(s): {:?}", host, tag);
+                    warn!("[CODE: {}] | Host {:?} tagged with: {:?}", host.code, host.device_id, tag);
                 }
             }
 
-            debug!("Hosts tagged successfully");
+            warn!("Hosts tagged successfully");
+            
         }
         None => {
             error!("No command provided. Use --help for more information.");
