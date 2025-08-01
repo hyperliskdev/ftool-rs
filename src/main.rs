@@ -1,7 +1,7 @@
 use chrono::Local;
 use clap::{Parser, Subcommand};
 use fern::Dispatch;
-use log::{debug, error};
+use log::{error, warn};
 use rusty_falcon::easy::client::FalconHandle;
 use std::{fs, path::PathBuf};
 use tools::tag_hosts::tag_hosts;
@@ -128,11 +128,11 @@ async fn main() {
 
             if action == "remove" {
                 for host in &result.unwrap_or_default() {
-                    warn!("[CODE: {}] | Host with tag: {:?} removed from {:?}", host.code, tag, host.device_id);
+                    warn!("[CODE: {:?}] | Host with tag: {:?} removed from {:?}", host.code, tag, host.device_id);
                 }
             } else {
                 for host in &result.unwrap_or_default() {
-                    warn!("[CODE: {}] | Host {:?} tagged with: {:?}", host.code, host.device_id, tag);
+                    warn!("[CODE: {:?}] | Host {:?} tagged with: {:?}", host.code, host.device_id, tag);
                 }
             }
 
