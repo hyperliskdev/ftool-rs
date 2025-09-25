@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use log::{error, info, warn};
 use rusty_falcon::{
     apis::{
-        discover_api::get_hosts, hosts_api::{query_devices_by_filter, QueryDevicesByFilterError}, Error
+        discover_api::get_hosts, hosts_api::{get_device_details_v2, query_devices_by_filter, QueryDevicesByFilterError}, Error
     },
     easy::client::FalconHandle,
     models::{MsaPeriodQueryResponse, MsaspecPeriodError},
@@ -47,14 +47,7 @@ pub async fn alive_hosts(
     info!("host ids: {:?}", &host_ids);
     
     // Take the host_ids and pear them down in the get_hosts query to be a Vec<String> of hostnames that exist in Crowdstrike.
-    let hosts = get_hosts(&falcon.cfg, host_ids.resources).await.map_err(|e| {
-        error!("Failed to query devices by filter: {}", e);
-            vec![MsaspecPeriodError {
-                code: 500,
-                id: None,
-                message: e.to_string(),
-            }]
-    })?;
+    let hosts = get_device_details_v2(&falcon.cfg, host_ids.resources).await.unwrap();
 
     info!("hosts value: {:?}", &hosts);
 
