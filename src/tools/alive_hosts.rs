@@ -58,6 +58,8 @@ pub async fn alive_hosts(
     for host in hosts.resources {
         let hostname = host.hostname.unwrap();
 
+        info!("HOST: {:?}", &hostname);
+
         if hostnames.contains(&hostname) {
             count = count + 1;
         } else {
@@ -66,6 +68,5 @@ pub async fn alive_hosts(
     }
 
     warn!("Found {:?} devices in crowdstrike out of {:?}.", count, hostnames_count);
-    
     Ok(())
 }
