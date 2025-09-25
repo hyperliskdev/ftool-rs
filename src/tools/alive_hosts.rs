@@ -51,22 +51,22 @@ pub async fn alive_hosts(
 
     let hosts = get_device_details_v2(&falcon.cfg, host_ids).await;
 
-    // info!("hosts value: {:?}", &hosts.ok().unwrap());
+    info!("hosts value: {:?}", &hosts.ok().unwrap());
 
-    let mut count = 0;
-    for host in hosts.ok().unwrap().resources {
-        let hostname = host.hostname.unwrap();
+    // let mut count = 0;
+    // for host in hosts.ok().unwrap().resources {
+    //     let hostname = host.hostname.unwrap();
 
-        info!("HOST: {:?}", &hostname);
+    //     info!("HOST: {:?}", &hostname);
 
-        if hostnames.contains(&hostname) {
-            count = count + 1;
-        } else {
-            info!("Could not find {:?}", &hostname)
-        }
-    }
+    //     if hostnames.contains(&hostname) {
+    //         count = count + 1;
+    //     } else {
+    //         info!("Could not find {:?}", &hostname)
+    //     }
+    // }
 
-    warn!("Found {:?} devices in crowdstrike out of {:?}.", count, hostnames_count);
+    // warn!("Found {:?} devices in crowdstrike out of {:?}.", count, hostnames_count);
 
     Ok(())
 }
