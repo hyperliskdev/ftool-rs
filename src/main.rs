@@ -8,6 +8,8 @@ use tools::tag_hosts::tag_hosts;
 extern crate dotenv;
 
 use dotenv::dotenv;
+
+use crate::tools::alive_hosts::alive_hosts;
 mod tools;
 
 fn setup_logger() -> Result<(), Box<dyn std::error::Error>> {
@@ -77,6 +79,12 @@ enum Commands {
         #[arg(long, value_name = "ACTION", default_value = "add")]
         action: String,
     },
+    // Identify if hosts are in 
+    #[command(name = "alive-hosts")]
+    AliveHosts {
+        #[arg(long, value_name = "FILE")]
+        hosts: Option<PathBuf>
+    }
 }
 
 #[tokio::main]
@@ -138,6 +146,33 @@ async fn main() {
 
             warn!("Hosts tagged successfully");
             
+        }
+        Some(Commands::AliveHosts { hosts }) => {
+            let hosts = match hosts {
+                Some(path) => {
+                    if path.exists() {
+                        path.clone()
+                    } else {
+                        warn!("The specified file does not exist: {:?}", path);
+                        return;
+                    }
+                }
+                None => {
+                    error!(
+                        "No hosts file provided. Please specify a file with the --hosts option."
+                    );
+                    return;
+                }
+            };
+
+            let result = alive_hosts(&falcon, hosts).await;
+
+            if let Err(errors) = result {
+                for error in errors {
+                    error!("Error tagging hosts: {:?}", error);
+                }
+                return;
+            }
         }
         None => {
             error!("No command provided. Use --help for more information.");
