@@ -58,13 +58,12 @@ pub async fn alive_hosts(
             }]
     })?;
 
-    let count = 0;
+    let mut count = 0;
     for host in hosts.resources {
         let hostname = host.hostname.unwrap();
 
         if hostnames.contains(&hostname) {
-            count + 1;
-
+            count = count + 1;
         } else {
             info!("Could not find {:?}", &hostname)
         }
