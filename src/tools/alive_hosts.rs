@@ -43,10 +43,6 @@ pub async fn alive_hosts(
                 message: e.to_string(),
             }]
         })?;
-
-    if !host_ids.errors.is_empty() {
-        return Err(host_ids.errors);
-    }
     
     // Take the host_ids and pear them down in the get_hosts query to be a Vec<String> of hostnames that exist in Crowdstrike.
     let hosts = get_hosts(&falcon.cfg, host_ids.resources).await.map_err(|e| {
@@ -57,11 +53,6 @@ pub async fn alive_hosts(
                 message: e.to_string(),
             }]
     })?;
-
-    if let Some(ref errors) = hosts.errors  {
-        error!("Could not query devices: {:?}", errors);
-        return Err(errors.clone());
-    }
 
     let mut count = 0;
     for host in hosts.resources {
@@ -75,5 +66,6 @@ pub async fn alive_hosts(
     }
 
     warn!("Found {:?} devices in crowdstrike out of {:?}.", count, hostnames_count);
+    
     Ok(())
 }
