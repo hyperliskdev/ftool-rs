@@ -43,6 +43,8 @@ pub async fn alive_hosts(
                 message: e.to_string(),
             }]
         })?;
+
+    info!("host ids: {:?}", &host_ids);
     
     // Take the host_ids and pear them down in the get_hosts query to be a Vec<String> of hostnames that exist in Crowdstrike.
     let hosts = get_hosts(&falcon.cfg, host_ids.resources).await.map_err(|e| {
