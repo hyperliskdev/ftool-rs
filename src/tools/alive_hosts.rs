@@ -3,10 +3,10 @@ use std::path::PathBuf;
 use log::{error, info, warn};
 use rusty_falcon::{
     apis::{
-        discover_api::get_hosts, hosts_api::{get_device_details_v2, query_devices_by_filter, QueryDevicesByFilterError}, Error
+        hosts_api::{get_device_details_v2, query_devices_by_filter},
     },
     easy::client::FalconHandle,
-    models::{MsaPeriodQueryResponse, MsaspecPeriodError},
+    models::{MsaspecPeriodError},
 };
 
 // Take in a list of hostnames and find them in crowdstrike, return ones that are not found in crowdstrike.
@@ -47,7 +47,15 @@ pub async fn alive_hosts(
     info!("host ids: {:?}", &host_ids);
     
     // Take the host_ids and pear them down in the get_hosts query to be a Vec<String> of hostnames that exist in Crowdstrike.
-    let hosts = get_device_details_v2(&falcon.cfg, host_ids.resources).await.unwrap();
+    let hosts = get_device_details_v2(&falcon.cfg, host_ids.resources).await.map_err(|e| {
+        error!("Failed to update device tags: {}", e);
+        vec![MsaspecPeriodError {
+            code: 500,
+            id: None,
+            message: e.to_string(),
+        }]
+    })?;
+
 
     info!("hosts value: {:?}", &hosts);
 
