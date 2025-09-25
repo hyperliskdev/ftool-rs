@@ -58,6 +58,11 @@ pub async fn alive_hosts(
             }]
     })?;
 
+    if let Some(ref errors) = hosts.errors  {
+        error!("Could not query devices: {:?}", errors);
+        return Err(errors.clone());
+    }
+
     let mut count = 0;
     for host in hosts.resources {
         let hostname = host.hostname.unwrap();
