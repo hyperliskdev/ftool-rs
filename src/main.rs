@@ -169,7 +169,7 @@ async fn main() {
 
             if let Err(errors) = result {
                 for error in errors {
-                    error!("Error tagging hosts: {:?}", error);
+                    error!("Error discovering hosts: {:?}", error);
                 }
                 return;
             }
