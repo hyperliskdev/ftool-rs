@@ -23,8 +23,6 @@ pub async fn alive_hosts(
 
     info!("Searching for devices in the hostname file...");
 
-    let hostnames_count = &hostnames.len();
-
     let filter = format!(
         "hostname:[{}]",
         hostnames
@@ -33,6 +31,8 @@ pub async fn alive_hosts(
             .collect::<Vec<_>>()
             .join(",")
     );
+
+    info!("Querying devices for sensor_ids.");
 
     let host_ids =
         query_devices_by_filter(&falcon.cfg, None, None, None, Some(filter.as_str())).await.map_err(|e| {
@@ -44,29 +44,10 @@ pub async fn alive_hosts(
             }]
         })?;
 
-    info!("host ids: {:?}", &host_ids);
+    let hosts = get_device_details_v2(&falcon.cfg, host_ids.resources).await;
+
+    info!("{:?}", hosts);
     
-    // Take the host_ids and pear them down in the get_hosts query to be a Vec<String> of hostnames that exist in Crowdstrike.
-    let host_ids = host_ids.resources;
-
-    let hosts = get_device_details_v2(&falcon.cfg, host_ids).await;
-
-    info!("hosts value: {:?}", &hosts.ok().unwrap());
-
-    // let mut count = 0;
-    // for host in hosts.ok().unwrap().resources {
-    //     let hostname = host.hostname.unwrap();
-
-    //     info!("HOST: {:?}", &hostname);
-
-    //     if hostnames.contains(&hostname) {
-    //         count = count + 1;
-    //     } else {
-    //         info!("Could not find {:?}", &hostname)
-    //     }
-    // }
-
-    // warn!("Found {:?} devices in crowdstrike out of {:?}.", count, hostnames_count);
 
     Ok(())
 }
