@@ -47,15 +47,17 @@ pub async fn alive_hosts(
     info!("host ids: {:?}", &host_ids);
     
     // Take the host_ids and pear them down in the get_hosts query to be a Vec<String> of hostnames that exist in Crowdstrike.
-    let hosts = get_device_details_v2(&falcon.cfg, host_ids.resources).await.map_err(|e| {
-        error!("Failed to update device tags: {}", e);
+    let host_ids = host_ids.resources;
+
+    let hosts = get_device_details_v2(&falcon.cfg, host_ids).await.map_err(|e| {
+        error!("Failed to grab devices: {}", e);
         vec![MsaspecPeriodError {
             code: 500,
             id: None,
             message: e.to_string(),
         }]
     })?;
-
+ 
 
     info!("hosts value: {:?}", &hosts);
 
@@ -73,5 +75,6 @@ pub async fn alive_hosts(
     }
 
     warn!("Found {:?} devices in crowdstrike out of {:?}.", count, hostnames_count);
+
     Ok(())
 }
