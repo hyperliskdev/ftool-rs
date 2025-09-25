@@ -54,6 +54,8 @@ pub async fn alive_hosts(
             }]
     })?;
 
+    info!("hosts value: {:?}", &hosts);
+
     let mut count = 0;
     for host in hosts.resources {
         let hostname = host.hostname.unwrap();
