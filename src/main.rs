@@ -166,7 +166,8 @@ async fn main() {
             };
 
             let result = alive_hosts(&falcon, hosts).await;
-
+            
+            warn!("Result: {:?}", result)
             
         }
         None => {

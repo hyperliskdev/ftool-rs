@@ -40,7 +40,10 @@ pub async fn alive_hosts(
         }
     };
 
+    info!("Found host_ids: {:?}", &host_ids.resources);
+
     let hosts = get_device_details_v2(&falcon.cfg, host_ids.resources).await?;
+
 
     Ok(hosts)
 }
