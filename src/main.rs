@@ -167,12 +167,7 @@ async fn main() {
 
             let result = alive_hosts(&falcon, hosts).await;
 
-            if let Err(errors) = result {
-                for error in errors {
-                    error!("Error discovering hosts: {:?}", error);
-                }
-                return;
-            }
+            
         }
         None => {
             error!("No command provided. Use --help for more information.");
