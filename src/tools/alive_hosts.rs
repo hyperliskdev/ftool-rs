@@ -2,16 +2,16 @@ use std::path::PathBuf;
 
 use log::{error, info, warn};
 use rusty_falcon::{
-    apis::hosts_api::{get_device_details_v2, query_devices_by_filter},
+    apis::{discover_api::get_hosts, hosts_api::{get_device_details_v2, query_devices_by_filter}},
     easy::client::FalconHandle,
-    models::{DeviceapiPeriodDeviceDetailsResponseSwagger},
+    models::{DeviceapiPeriodDeviceDetailsResponseSwagger, DomainPeriodDiscoverApiHostEntitiesResponse},
 };
 
 // Take in a list of hostnames and find them in crowdstrike, return ones that are not found in crowdstrike.
 pub async fn alive_hosts(
     falcon: &FalconHandle,
     hosts: PathBuf,
-) -> Result<DeviceapiPeriodDeviceDetailsResponseSwagger, Box<dyn std::error::Error>> {
+) -> Result<DomainPeriodDiscoverApiHostEntitiesResponse, Box<dyn std::error::Error>> {
     let hostnames: Vec<String> = std::fs::read_to_string(&hosts)
         .expect("Failed to read hosts file")
         .lines()
@@ -42,8 +42,7 @@ pub async fn alive_hosts(
 
     info!("Found host_ids: {:?}", &host_ids.resources);
 
-    let hosts = get_device_details_v2(&falcon.cfg, host_ids.resources).await?;
-
+    let hosts = get_hosts(&falcon.cfg, host_ids.resources).await?;
 
     Ok(hosts)
 }
