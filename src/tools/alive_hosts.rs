@@ -40,15 +40,13 @@ pub async fn alive_hosts(
         }
     };
 
+    warn!("query_devices_by_filter --> {:?}", &host_ids);
+
+
     info!("Found host_ids: {:?}", &host_ids.resources);
 
-    debug!("{:?}", &host_ids);
 
     let hosts = post_device_details_v2(&falcon.cfg, models::MsaPeriodIdsRequest::new(host_ids.resources)).await?;
-
-    if hosts.errors.is_some() {
-        return Err(MsaPeriodApiError(format!("while getting Falcon Host IDs: {:?}")))
-    }
 
     println!("{:?}", hosts.resources);
 
