@@ -4,7 +4,7 @@ use log::{error, info, warn};
 use rusty_falcon::{
     apis::{discover_api::get_hosts, hosts_api::{get_device_details_v2, post_device_details_v2, query_devices_by_filter}},
     easy::client::FalconHandle,
-    models::{DeviceapiPeriodDeviceDetailsResponseSwagger, DomainPeriodDiscoverApiHostEntitiesResponse},
+    models::{self, DeviceapiPeriodDeviceDetailsResponseSwagger, DomainPeriodDiscoverApiHostEntitiesResponse, MsaPeriodApiError},
 };
 
 // Take in a list of hostnames and find them in crowdstrike, return ones that are not found in crowdstrike.
@@ -42,7 +42,15 @@ pub async fn alive_hosts(
 
     info!("Found host_ids: {:?}", &host_ids.resources);
 
-    let hosts = post_device_details_v2(&falcon.cfg, rusty_falcon::models::MsaPeriodIdsRequest { ids: host_ids.resources }).await?;
+    debug!("{:?}", &host_ids);
+
+    let hosts = post_device_details_v2(&falcon.cfg, models::MsaPeriodIdsRequest::new(host_ids.resources)).await?;
+
+    if hosts.errors.is_some() {
+        return Err(MsaPeriodApiError(format!("while getting Falcon Host IDs: {:?}")))
+    }
+
+    println!("{:?}", hosts.resources);
 
     Ok(hosts)
 }
